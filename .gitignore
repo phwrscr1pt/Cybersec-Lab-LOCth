@@ -1,0 +1,25 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# node/composer (if ever added)
+node_modules/
+vendor/
+
+# docker artifacts (named volumes aren’t in the repo anyway)
+docker-compose.override.yml
+
+# uploads: keep the .htaccess, ignore uploaded payloads
+/src/uploads/*
+!/src/uploads/.htaccess
+
+# logs & temp
+*.log
+tmp/
+cache/
+
+# env/secrets (if you add them later)
+.env
+.env.*
