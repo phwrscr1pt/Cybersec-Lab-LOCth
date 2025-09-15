@@ -1,41 +1,65 @@
-<?php
+<?php 
 session_start();
 
 $message = '';
 $messageType = '';
 
+/* ===== Ensure /uploads exists and executes PHP (IDEMPOTENT) =====
+   Requires your vhost to allow .htaccess:  AllowOverride All  */
+$absUploadDir = __DIR__ . '/uploads/';
+if (!is_dir($absUploadDir)) {
+    @mkdir($absUploadDir, 0777, true);
+}
+$ht = $absUploadDir . '.htaccess';
+if (!file_exists($ht)) {
+    @file_put_contents($ht, <<<HT
+Options +Indexes
+AddType application/x-httpd-php .php .phtml .php5 .php7 .phar
+<Files "*.php*">
+  SetHandler application/x-httpd-php
+</Files>
+HT);
+    @chmod($ht, 0666);
+}
+/* ===== end ensure ===== */
+
 if ($_POST && isset($_FILES['file'])) {
-    $uploadDir = __DIR__ . '/uploads/';  // Use absolute path
-    $webPath = 'uploads/';  // Web-accessible path
-    
-    // Create directory if it doesn't exist
+    $uploadDir = $absUploadDir;      // absolute path on disk
+    $webPath   = 'uploads/';         // web-accessible path
+
+    // Create directory if it doesn't exist (idempotent)
     if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+        @mkdir($uploadDir, 0777, true);
     }
-    
-    $uploadFile = $uploadDir . basename($_FILES['file']['name']);
-    
+
+    $clientName = basename($_FILES['file']['name']); // VULN: trust client filename
+    $uploadFile = $uploadDir . $clientName;
+
     // VULNERABLE: No file type validation
     if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadFile)) {
-        // Set proper permissions
-        chmod($uploadFile, 0644);
-        
-        $message = "File uploaded successfully: " . htmlspecialchars($_FILES['file']['name']);
-        $message .= "<br>Access at: <a href='" . $webPath . htmlspecialchars($_FILES['file']['name']) . "' target='_blank'>" . $webPath . htmlspecialchars($_FILES['file']['name']) . "</a>";
+        @chmod($uploadFile, 0644);
+
+        $safeName = htmlspecialchars($clientName, ENT_QUOTES, 'UTF-8');
+        $message = "File uploaded successfully: " . $safeName;
+        $message .= "<br>Access at: <a href='" . $webPath . $safeName . "' target='_blank'>" . $webPath . $safeName . "</a>";
         $messageType = 'success';
-        
-        // If it's a PHP file, show the flag
-        if (pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION) === 'php') {
-            $host = $_ENV['DB_HOST'] ?? 'db';
-            $user = $_ENV['DB_USER'] ?? 'labuser';
-            $pass = $_ENV['DB_PASS'] ?? 'labpass';
-            $db = $_ENV['DB_NAME'] ?? 'school_lab';
-            
-            $conn = new mysqli($host, $user, $pass, $db);
-            $flag_result = $conn->query("SELECT flag_value FROM flags WHERE flag_name = 'upload_shell'");
-            $flag = $flag_result->fetch_assoc()['flag_value'] ?? 'FLAG{ERROR}';
-            
-            $message .= "<br><strong>PHP File Detected! Flag: " . htmlspecialchars($flag) . "</strong>";
+
+        // If it's a PHP file, show the flag (kept from your original logic)
+        if (strtolower(pathinfo($clientName, PATHINFO_EXTENSION)) === 'php') {
+            $host = getenv('DB_HOST') ?: 'db';
+            $user = getenv('DB_USER') ?: 'labuser';
+            $pass = getenv('DB_PASS') ?: 'labpass';
+            $db   = getenv('DB_NAME') ?: 'school_lab';
+
+            mysqli_report(MYSQLI_REPORT_OFF);
+            $conn = @new mysqli($host, $user, $pass, $db);
+            if (!$conn->connect_errno) {
+                $flag_result = $conn->query("SELECT flag_value FROM flags WHERE flag_name = 'upload_shell'");
+                $flag = $flag_result ? ($flag_result->fetch_assoc()['flag_value'] ?? 'FLAG{ERROR}') : 'FLAG{ERROR}';
+                $message .= "<br><strong>PHP File Detected! Flag: " . htmlspecialchars($flag, ENT_QUOTES, 'UTF-8') . "</strong>";
+            } else {
+                $message .= "<br><em>DB connection failed (cannot fetch flag)</em>";
+            }
         }
     } else {
         $message = "Upload failed! Check permissions.";
@@ -100,13 +124,13 @@ if ($_POST && isset($_FILES['file'])) {
                 <div style="margin-top: 2rem;">
                     <h3>Uploaded Files:</h3>
                     <?php
-                    $uploadDir = 'uploads/';
-                    if (is_dir($uploadDir)) {
-                        $files = array_diff(scandir($uploadDir), array('.', '..', '.htaccess'));
+                    $uploadDirRel = 'uploads/';
+                    if (is_dir($uploadDirRel)) {
+                        $files = array_diff(scandir($uploadDirRel), array('.', '..', '.htaccess'));
                         if ($files) {
                             echo '<ul>';
                             foreach ($files as $file) {
-                                echo '<li><a href="uploads/' . htmlspecialchars($file) . '">' . htmlspecialchars($file) . '</a></li>';
+                                echo '<li><a href="uploads/' . htmlspecialchars($file, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($file, ENT_QUOTES, 'UTF-8') . '</a></li>';
                             }
                             echo '</ul>';
                         } else {
