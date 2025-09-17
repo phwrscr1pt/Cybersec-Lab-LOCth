@@ -31,6 +31,7 @@ if ($_POST) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyberTech University - OTP Verification</title>
     <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/modern-school.css">
 </head>
 <body>
     <header>
@@ -82,5 +83,6 @@ if ($_POST) {
             <p>&copy; 2024 CyberTech University. For education only. Do not deploy publicly.</p>
         </div>
     </footer>
+    <script src="assets/js/ui.js"></script>
 </body>
 </html>

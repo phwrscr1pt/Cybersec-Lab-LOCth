@@ -23,6 +23,7 @@ $flag = $flag_result->fetch_assoc()['flag_value'] ?? 'FLAG{ERROR}';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyberTech University - Admin Panel</title>
     <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/modern-school.css">
 </head>
 <body>
     <header>
@@ -71,5 +72,6 @@ $flag = $flag_result->fetch_assoc()['flag_value'] ?? 'FLAG{ERROR}';
             <p>&copy; 2024 CyberTech University. For education only. Do not deploy publicly.</p>
         </div>
     </footer>
+    <script src="assets/js/ui.js"></script>
 </body>
 </html>
