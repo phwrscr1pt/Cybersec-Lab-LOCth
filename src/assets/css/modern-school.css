@@ -173,8 +173,8 @@ tfoot td { font-weight:600 }
   padding: .75rem .9rem; border-radius:.75rem; border:1px solid var(--card-border);
   background: var(--card); display:flex; gap:.75rem; align-items:flex-start;
 }
-.alert-success { border-color:#bbf7d0; background: #ecfdf5 }
-.alert-warning { border-color:#fde68a; background: #fffbeb }
+.alert-success { border-color:#bbf7d0; background: #00ff1e }
+.alert-warning { border-color:#cb1c1c; background: #9b0101 }
 .alert-danger  { border-color:#fecaca; background: #fef2f2 }
 .badge {
   display:inline-block; font-size:.8rem; padding:.2rem .5rem; border-radius:999px;
@@ -211,4 +211,15 @@ a:hover { text-decoration: underline }
   position:absolute !important; height:1px; width:1px; overflow:hidden; clip:rect(1px,1px,1px,1px);
   white-space:nowrap; border:0; padding:0; margin:-1px;
 }
-.form .actions { margin-top: 1rem; }
+.title-with-logo{
+  display: flex;
+  align-items: center;
+  gap: .6rem;           /* ระยะห่างโลโก้กับข้อความ */
+  margin: 0;            /* ให้ชิดเหมือน H1 เดิม */
+}
+.title-with-logo img{
+  width: 40px;          /* ปรับขนาดตามชอบ */
+  height: 40px;
+  border-radius: 8px;   /* มุมโค้งเล็กน้อย (ลบได้ถ้าไม่ต้องการ) */
+  display: block;
+}

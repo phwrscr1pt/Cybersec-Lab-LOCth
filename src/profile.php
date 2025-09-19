@@ -33,7 +33,7 @@ if ($result->num_rows === 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberTech University - Student Profile</title>
+    <title>Ban Nong Ngu Hao University - Student Profile</title>
     <link rel="icon" href="assets/img/logo.svg">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/modern-school.css">
@@ -43,7 +43,7 @@ if ($result->num_rows === 0) {
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <h1>CyberTech University</h1>
+                    <h1>Ban Nong Ngu Hao University</h1>
                 </div>
                 <nav>
                     <ul>
@@ -86,7 +86,7 @@ if ($result->num_rows === 0) {
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 Cyber Tech University. For education only. Do not deploy publicly.</p>
+            <p>&copy; 2025 Ban Nong Ngu Hao University. For education only. Do not deploy publicly.</p>
         </div> 
     </footer>
     <script src="assets/js/ui.js"></script>

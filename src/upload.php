@@ -1,157 +1,160 @@
 <?php
-// --- session (safe guard) ---
+// --- session ---
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 /*
-  This page is intentionally vulnerable (no validation) for training.
-  Fixes included:
-  - Absolute path for saving uploads
-  - Ensure /uploads exists
-  - .htaccess so Apache serves (and optionally executes) files in /uploads
+  TRAINING VERSION: "มีวาลิเดชันแต่ยังพอเจาะได้"
+  - ปิดการ execute ใน uploads? -> (เจตนา) เปิดให้ execute เฉพาะนามสกุล PHP ทั่วไป รวมถึง .pht / .phar
+  - บล็อก .php, .php3, .php5, .php7, .phtml, .phps "โดยตั้งใจลืม" .pht / .phar
+  - เช็ค MIME แบบเชื่อ $_FILES['type'] (แก้ได้ด้วย Burp)
+  - จำกัดขนาดไฟล์
+  - ถ้าอัปโหลดไฟล์ที่ execute ได้สำเร็จ จะแสดง FLAG
 */
 
-// ---------- Paths ----------
-$uploadDir = __DIR__ . '/uploads/';              // absolute FS path
-$webBase   = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\'); // e.g. '' or '/subdir'
-$webPath   = ($webBase === '' ? '' : $webBase) . '/uploads/'; // URL path
+// ---------------- Config (for lab) ----------------
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5MB
 
-// Create uploads dir if missing
-if (!is_dir($uploadDir)) {
-    @mkdir($uploadDir, 0777, true);
-}
+// “Blacklist” ที่ตั้งใจพลาด: ไม่มี pht / phar
+$BLOCKED_EXTS = ['php','php3','php4','php5','php7','php8','phtml','phps'];
 
-// Ensure Apache will serve files in /uploads
-// (For Apache 2.4; if you don't want PHP execution, remove the SetHandler/AddType lines.)
+// “ไฟล์ที่อนุญาต” (แค่ไว้สร้างภาพลวงตา ฝั่ง MIME เราเชื่อ header จาก client ได้)
+$SOFT_ALLOWED_MIME = [
+  'image/png','image/jpeg','image/gif','image/webp','application/pdf'
+];
+
+// นามสกุลที่ Apache/PHP จะ execute (เปิดใน .htaccess ด้านล่าง)
+$EXECUTABLE_EXTS = ['php','phtml','php3','pht','php5','php7','phar'];
+
+// ---------------- Paths ----------------
+$uploadDir = __DIR__ . '/uploads/';
+$webBase   = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+$webPath   = ($webBase === '' ? '' : $webBase) . '/uploads/';
+
+// เตรียมโฟลเดอร์
+if (!is_dir($uploadDir)) { @mkdir($uploadDir, 0777, true); }
+
+// .htaccess (ตั้งใจเปิด execute ให้ตระกูล PHP รวมทั้ง .pht/.phar)
 $htaccess = $uploadDir . '.htaccess';
 if (!file_exists($htaccess)) {
-    @file_put_contents($htaccess, <<<HT
+  @file_put_contents($htaccess, <<<HT
 Options +Indexes
 <IfModule mod_authz_core.c>
   Require all granted
 </IfModule>
 
-# LAB ONLY: allow PHP to execute in uploads (vulnerable by design)
+# LAB ONLY: Execute PHP inside /uploads (รวม .pht, .phar)
 AddType application/x-httpd-php .php .phtml .php3 .pht .php5 .php7 .phar
 <FilesMatch "\\.(php|phtml|php3|pht|php5|php7|phar)$">
   SetHandler application/x-httpd-php
 </FilesMatch>
 HT);
-    @chmod($htaccess, 0666);
+  @chmod($htaccess, 0666);
 }
 
-// ---------- Handle upload ----------
-$message = '';
-$messageType = '';
-$linkHtml = '';
+// ---------------- Helpers ----------------
+function sanitize_name(string $name): string {
+  $name = basename($name);
+  $name = preg_replace('/[^\w.\-]+/u', '_', $name);
+  return ltrim($name, '.') ?: 'file';
+}
+
+function ext_of(string $filename): string {
+  return strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+}
+
+function random_name_with_ext(string $ext): string {
+  return bin2hex(random_bytes(6)) . '.' . strtolower($ext);
+}
+
+// ---------------- Handle upload ----------------
+$msg = ''; $type = ''; $extra = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
-    $name = basename($_FILES['file']['name']); // VULN: trust client filename
-    $dest = $uploadDir . $name;
+  $f = $_FILES['file'];
 
-    if (is_uploaded_file($_FILES['file']['tmp_name']) && move_uploaded_file($_FILES['file']['tmp_name'], $dest)) {
-        @chmod($dest, 0666);
+  if ($f['error'] !== UPLOAD_ERR_OK) {
+    $msg = "Upload error (code {$f['error']}).";
+    $type = 'error';
+  } elseif ($f['size'] <= 0 || $f['size'] > MAX_UPLOAD_BYTES) {
+    $msg = 'File too large.';
+    $type = 'error';
+  } else {
+    $original = sanitize_name($f['name']);
+    $ext = ext_of($original);
 
-        // Build a full clickable URL (works behind proxies too)
-        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-        $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
-        $url    = $scheme . '://' . $host . $webPath . rawurlencode($name);
-
-        $message = "File uploaded successfully: " . htmlspecialchars($name);
-        $messageType = 'success';
-        $linkHtml = "<br>Access at: <a href=\"" . htmlspecialchars($url) . "\" target=\"_blank\">" . htmlspecialchars($url) . "</a>";
-
-        // Optional: bonus flag reveal for PHP files (as in your earlier code)
-        $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-        if ($ext === 'php' || $ext === 'phtml' || $ext === 'pht') {
-            $hostDb = $_ENV['DB_HOST'] ?? 'db';
-            $userDb = $_ENV['DB_USER'] ?? 'mylabuser';
-            $passDb = $_ENV['DB_PASS'] ?? 'mylabpass';
-            $dbName = $_ENV['DB_NAME'] ?? 'school_lab';
-
-            mysqli_report(MYSQLI_REPORT_OFF);
-            $conn = @new mysqli($hostDb, $userDb, $passDb, $dbName);
-            if (!$conn->connect_errno) {
-                if ($res = $conn->query("SELECT flag_value FROM flags WHERE flag_name='upload_shell' LIMIT 1")) {
-                    $row = $res->fetch_assoc();
-                    $flag = $row['flag_value'] ?? 'FLAG{ERROR}';
-                    $message .= "<br><strong>PHP File Detected! Flag: " . htmlspecialchars($flag) . "</strong>";
-                }
-            }
-        }
+    // 1) บล็อก .php/.phtml/... (ตั้งใจ "ลืม" .pht/.phar)
+    if (in_array($ext, $BLOCKED_EXTS, true)) {
+      $msg = "This file type is not allowed.";
+      $type = 'error';
     } else {
-        $message = "Upload failed! Check permissions or form enctype.";
-        $messageType = 'error';
+      // 2) ตรวจ MIME แบบอ่อน (เชื่อค่า client)
+      $clientMime = $_FILES['file']['type'] ?? 'application/octet-stream';
+      if (!in_array($clientMime, $SOFT_ALLOWED_MIME, true)) {
+        $msg = "MIME type not allowed.";
+        $type = 'error';
+      } else {
+        // 3) ใช้ชื่อสุ่ม (คงนามสกุลเดิมไว้เพื่อให้ .pht/.phar ทำงานได้)
+        $saveName = random_name_with_ext($ext);
+        $dest = $uploadDir . $saveName;
+
+        if (is_uploaded_file($f['tmp_name']) && move_uploaded_file($f['tmp_name'], $dest)) {
+          @chmod($dest, 0666);
+          $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+          $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
+          $url    = $scheme . '://' . $host . $webPath . rawurlencode($saveName);
+
+          $msg  = "File uploaded successfully: " . htmlspecialchars($original) . " → " . htmlspecialchars($saveName);
+          $type = 'success';
+          $extra = "<br>Access at: <a href=\"" . htmlspecialchars($url) . "\" target=\"_blank\">" . htmlspecialchars($url) . "</a>";
+
+          // ถ้าเป็นไฟล์ที่ execute ได้ (เช่น .pht/.phar) → โชว์ FLAG
+          if (in_array($ext, $EXECUTABLE_EXTS, true)) {
+            // ตัวอย่างดึง flag จาก DB/หรือฮาร์ดโค้ดก็ได้
+            $flag = "FLAG{UPLOAD_BYPASS_VIA_PHT_AND_FAKE_MIME}";
+            $extra .= "<br><strong>Flag: " . htmlspecialchars($flag) . "</strong>";
+          }
+
+        } else {
+          $msg = 'Upload failed! Check permissions or enctype.';
+          $type = 'error';
+        }
+      }
     }
+  }
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>File Upload (Vulnerable)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="assets/css/styles.css">
-  <link rel="stylesheet" href="assets/css/modern-school.css">
-  <style>
-    body{font-family:ui-sans-serif,system-ui,Segoe UI,Arial;margin:24px}
-    .alert{padding:10px 12px;border-radius:8px;border:1px solid #ddd;margin:10px 0}
-    .ok{background:#ecfdf5;border-color:#d1fae5}
-    .err{background:#fef2f2;border-color:#fee2e2}
-    .card{border:1px solid #e5e7eb;border-radius:12px;padding:16px;max-width:880px}
-    input[type=file]{display:block;margin:8px 0}
-    code,pre{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px}
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h2>File Upload (Intentionally Vulnerable)</h2>
-
-    <?php if ($message): ?>
-      <div class="alert <?= $messageType==='success'?'ok':'err' ?>">
-        <?= $message ?><?= $linkHtml ?>
-      </div>
-    <?php endif; ?>
-
-    <form method="POST" enctype="multipart/form-data">
-      <label>Select File:</label>
-      <input type="file" name="file" required>
-      <button type="submit">Upload</button>
-    </form>
-
-    <div style="margin-top:16px">
-      <strong>Tips:</strong>
-      <ul>
-        <li>PNG/JPG should be served at <code><?= htmlspecialchars($webPath) ?>yourfile.png</code></li>
-        <li>For lab RCE, upload <code>shell.php</code> with content:
-          <pre>&lt;?php system($_GET['cmd'] ?? 'whoami'); ?&gt;</pre>
-          Then browse: <code><?= htmlspecialchars($webPath) ?>shell.php?cmd=whoami</code>
-        </li>
-      </ul>
+<!-- ===== View (ใส่ UI ของคุณได้ตามปกติ) ===== -->
+<link rel="stylesheet" href="assets/css/modern-school.css">
+<div class="card">
+  <h3>Upload (Training)</h3>
+  <?php if ($msg): ?>
+    <div class="alert <?= $type === 'success' ? 'alert-success':'alert-danger' ?>">
+      <?= $msg ?><?= $extra ?>
     </div>
+  <?php endif; ?>
 
-    <div style="margin-top:16px">
-      <h3>Uploaded Files</h3>
-      <?php
-      $files = @scandir($uploadDir);
-      if ($files) {
-          echo '<ul>';
-          foreach ($files as $f) {
-              if ($f === '.' || $f === '..' || $f === '.htaccess') continue;
-              $href = $webPath . rawurlencode($f);
-              echo '<li><a target="_blank" href="' . htmlspecialchars($href) . '">' . htmlspecialchars($f) . '</a></li>';
-          }
-          echo '</ul>';
-      } else {
-          echo '<p>No files uploaded yet.</p>';
-      }
-      ?>
+  <form class="form mt-4" method="post" enctype="multipart/form-data" autocomplete="off">
+    <div class="mb-4">
+      <label for="f">Choose file</label>
+      <input id="f" type="file" name="file" class="input" required>
+      <div class="help">Allowed (UI): png, jpg, gif, webp, pdf · Max 5MB</div>
     </div>
+    <button class="btn">Upload</button>
+  </form>
+</div>
 
-    <div class="alert" style="margin-top:16px">
-      <b>Debug info (helps if you still see 404):</b><br>
-      FS path: <code><?= htmlspecialchars($uploadDir) ?></code><br>
-      URL path: <code><?= htmlspecialchars($webPath) ?></code>
-    </div>
-  </div>
-</body>
-</html>
+<script>
+// Client-side validation (กันตรงๆ แบบพื้นๆ — ข้ามได้ด้วย Burp)
+document.querySelector('form').addEventListener('submit', (e) => {
+  const f = document.getElementById('f');
+  if (!f.files[0]) return;
+
+  const name = f.files[0].name.toLowerCase();
+  const ok = /\.(png|jpe?g|gif|webp|pdf)$/.test(name); // ตั้งใจไม่ครอบคลุม .pht/.phar
+  if (!ok) {
+    e.preventDefault();
+    alert('This file type is not allowed (client check).');
+  }
+});
+</script>
+

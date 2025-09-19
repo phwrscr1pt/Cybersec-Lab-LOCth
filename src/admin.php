@@ -22,7 +22,7 @@ $flag = $flag_result->fetch_assoc()['flag_value'] ?? 'FLAG{ERROR}';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="assets/img/logo.svg">
-    <title>CyberTech University - Admin Panel</title>
+    <title>Ban Nong Ngu Hao - Admin Panel</title>
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/modern-school.css">
 </head>
@@ -31,7 +31,7 @@ $flag = $flag_result->fetch_assoc()['flag_value'] ?? 'FLAG{ERROR}';
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <h1>CyberTech University - Admin</h1>
+                    <h1>Ban Nong Ngu Hao University - Admin</h1>
                 </div>
                 <nav>
                     <ul>
@@ -46,6 +46,8 @@ $flag = $flag_result->fetch_assoc()['flag_value'] ?? 'FLAG{ERROR}';
     <main>
         <div class="container">
             <div class="card">
+                <!-- <img src="assets/img/snake.png" alt="CyberTech University logo"> -->
+                <img src="assets/img/snake.png" alt="" style="display:block; margin: 0 auto; max-width:100%; height:auto;">
                 <h2>🎉 Admin Panel Access Granted!</h2>
                 <div class="alert alert-success">
                     <h3>Congratulations!</h3>
@@ -70,7 +72,7 @@ $flag = $flag_result->fetch_assoc()['flag_value'] ?? 'FLAG{ERROR}';
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 CyberTech University. For education only. Do not deploy publicly.</p>
+            <p>&copy; 2025 Ban Nong Ngu Hao University. For education only. Do not deploy publicly.</p>
         </div>
     </footer>
     <script src="assets/js/ui.js"></script>

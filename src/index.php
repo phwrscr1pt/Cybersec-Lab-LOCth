@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="assets/img/logo.svg">
-    <title>CyberTech University - Home</title>
+    <title>Ban Nong Ngu Hao - Home</title>
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/modern-school.css">
 </head>
@@ -13,7 +13,11 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <h1>CyberTech University</h1>
+                    <!-- <h1>CyberTech University</h1> -->
+                     <h1 class="title-with-logo">
+                        <img src="assets/img/snake.png" alt="CyberTech University logo">
+                        <span>Ban Nong Ngu Hao University</span>
+                    </h1>
                 </div>
                 <nav>
                     <ul>
@@ -34,7 +38,7 @@
         <div class="container">
             <div class="card
             " style="margin-bottom: 2rem;">
-                <h2>Welcome to CyberTech University</h2>
+                <h2>Welcome to Ban Nong Ngu Hao University</h2>
                 <!-- <p>Leading the future in cybersecurity education and research. Join us in protecting the digital world.</p> -->
                 <br>
                 <a href="login.php" class="btn">Access Student Portal</a>
@@ -59,7 +63,7 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 CyberTech University. For education only. Do not deploy publicly.</p>
+            <p>&copy; 2025 Ban Nong Ngu Hao University. For education only. Do not deploy publicly.</p>
         </div>
     </footer>
     <script src="assets/js/ui.js"></script>

@@ -43,7 +43,7 @@ if (isset($_GET['cid'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberTech University - Course Search</title>
+    <title>Ban Nong Ngu Hao University - Course Search</title>
     <link rel="icon" href="assets/img/logo.svg">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/modern-school.css">
@@ -53,7 +53,7 @@ if (isset($_GET['cid'])) {
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <h1>CyberTech University</h1>
+                    <h1>Ban Nong Ngu Hao University</h1>
                 </div>
                 <nav>
                     <ul>
@@ -78,7 +78,7 @@ if (isset($_GET['cid'])) {
                         <label for="cid">Course ID:</label>
                         <input type="text" id="cid" name="cid" value="<?php echo htmlspecialchars($_GET['cid'] ?? ''); ?>" placeholder="e.g., 0001">
                     </div>
-                    <button type="submit" class="btn">Search</button>
+                    <button type="submit" class="btn mt-4">Search</button>
                 </form>
 
                 <?php if ($error): ?>
@@ -105,21 +105,21 @@ if (isset($_GET['cid'])) {
                         </tbody>
                     </table>
                 <?php elseif (isset($_GET['cid']) && !$error): ?>
-                    <div class="alert alert-warning">No courses found for ID: <?php echo htmlspecialchars($_GET['cid']); ?></div>
+                    <div class="alert alert-warning mt-4">No courses found for ID: <?php echo htmlspecialchars($_GET['cid']); ?></div>
                 <?php endif; ?>
 
-                <div class="alert alert-warning" style="margin-top: 2rem;">
-                    <!-- <strong>Vulnerability Hint:</strong>
+                <!-- <div class="alert alert-warning" style="margin-top: 2rem;">
+                    <strong>Vulnerability Hint:</strong>
                     <p>This search is vulnerable to SQL injection. Try searching for course ID: <code>0087</code></p>
-                    <p>When you find the special course, check your HTTP response headers/cookies in Burp Suite or browser dev tools!</p> -->
-                </div>
+                    <p>When you find the special course, check your HTTP response headers/cookies in Burp Suite or browser dev tools!</p>
+                </div> -->
             </div>
         </div>
     </main>
 
     <footer>
         <div class="container">
-            <p>&copy; 2024 CyberTech University. For education only. Do not deploy publicly.</p>
+            <p>&copy; 2025 Ban Nong Ngu Hao University. For education only. Do not deploy publicly.</p>
         </div>
     </footer>
     <script src="assets/js/ui.js"></script>

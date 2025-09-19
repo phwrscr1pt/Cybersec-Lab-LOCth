@@ -145,9 +145,9 @@ textarea:focus {
 }
 
 .alert-success {
-    background-color: #d4edda;
+    background-color: #01b72b;
     color: #155724;
-    border: 1px solid #c3e6cb;
+    border: 1px solid #000000;
 }
 
 .alert-error {
@@ -157,9 +157,9 @@ textarea:focus {
 }
 
 .alert-warning {
-    background-color: #fff3cd;
+    background-color: #c93a3a;
     color: #856404;
-    border: 1px solid #ffeaa7;
+    border: 1px solid #000000;
 }
 
 table {
@@ -227,4 +227,17 @@ footer {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     margin: 2rem 0;
+}
+
+.title-with-logo{
+  display: flex;
+  align-items: center;
+  gap: .6rem;           /* ระยะห่างโลโก้กับข้อความ */
+  margin: 0;            /* ให้ชิดเหมือน H1 เดิม */
+}
+.title-with-logo img{
+  width: 50px;          /* ปรับขนาดตามชอบ */
+  height: 50px;
+  border-radius: 8px;   /* มุมโค้งเล็กน้อย (ลบได้ถ้าไม่ต้องการ) */
+  display: block;
 }
