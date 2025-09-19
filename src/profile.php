@@ -34,6 +34,7 @@ if ($result->num_rows === 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyberTech University - Student Profile</title>
+    <link rel="icon" href="assets/img/logo.svg">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/modern-school.css">
 </head>
@@ -73,11 +74,11 @@ if ($result->num_rows === 0) {
                         <p><strong>Email:</strong> <?php echo htmlspecialchars($student['email']); ?></p>
                     </div>
 
-                    <div class="alert alert-warning" style="margin-top: 2rem;">
+                    <!-- <div class="alert alert-warning" style="margin-top: 2rem;">
                         <strong>IDOR Vulnerability Demo:</strong>
                         <p>Try changing the 'sid' parameter in the URL to access other student profiles (e.g., ?sid=0002, ?sid=0003, etc.)</p>
                         <p>This demonstrates an Insecure Direct Object Reference where authorization is not properly checked.</p>
-                    </div>
+                    </div> -->
                 </div>
             <?php endif; ?>
         </div>
@@ -85,7 +86,7 @@ if ($result->num_rows === 0) {
 
     <footer>
         <div class="container">
-            <p>&copy; 2024 Cyber Tech University. For education only. Do not deploy publicly.</p>
+            <p>&copy; 2025 Cyber Tech University. For education only. Do not deploy publicly.</p>
         </div> 
     </footer>
     <script src="assets/js/ui.js"></script>

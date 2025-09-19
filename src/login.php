@@ -45,6 +45,7 @@ if ($_POST) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyberTech University - Student Portal Login</title>
+    <link rel="icon" href="assets/img/logo.svg">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/modern-school.css">
 </head>
@@ -94,13 +95,13 @@ if ($_POST) {
                         <input type="password" id="password" name="password" required>
                     </div>
                     
-                    <button type="submit" class="btn">Login</button>
+                    <button type="submit" class="btn mt-4">Login</button>
                 </form>
 
                 <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #eee;">
                     <h4>Demo Accounts:</h4>
                     <p><strong>Student:</strong> student0001 / pass1</p>
-                    <p><strong>Admin:</strong> admin / admin123</p>
+                    <!-- <p><strong>Admin:</strong> admin / admin123</p> -->
                 </div>
                 
                 <div style="margin-top: 1rem;">
@@ -114,7 +115,7 @@ if ($_POST) {
 
     <footer>
         <div class="container">
-            <p>&copy; 2024 CyberTech University. For education only. Do not deploy publicly.</p>
+            <p>&copy; 2025 CyberTech University. For education only. Do not deploy publicly.</p>
         </div>
     </footer>
     <script src="assets/js/ui.js"></script>

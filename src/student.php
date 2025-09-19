@@ -44,6 +44,7 @@ if (isset($_GET['cid'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyberTech University - Course Search</title>
+    <link rel="icon" href="assets/img/logo.svg">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/modern-school.css">
 </head>
@@ -108,9 +109,9 @@ if (isset($_GET['cid'])) {
                 <?php endif; ?>
 
                 <div class="alert alert-warning" style="margin-top: 2rem;">
-                    <strong>Vulnerability Hint:</strong>
+                    <!-- <strong>Vulnerability Hint:</strong>
                     <p>This search is vulnerable to SQL injection. Try searching for course ID: <code>0087</code></p>
-                    <p>When you find the special course, check your HTTP response headers/cookies in Burp Suite or browser dev tools!</p>
+                    <p>When you find the special course, check your HTTP response headers/cookies in Burp Suite or browser dev tools!</p> -->
                 </div>
             </div>
         </div>

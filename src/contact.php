@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyberTech University - Contact</title>
+    <link rel="icon" href="assets/img/logo.svg">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/modern-school.css">
 </head>
@@ -31,7 +32,7 @@
 
     <main>
         <div class="container">
-            <div class="card">
+            <div class="grid">
                 <h2>Contact Information</h2>
             </div>
 

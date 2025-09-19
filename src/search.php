@@ -37,6 +37,7 @@ if (isset($_GET['tid'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyberTech University - Teacher Directory</title>
+    <link rel="icon" href="assets/img/logo.svg">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/modern-school.css">
 </head>
@@ -70,7 +71,7 @@ if (isset($_GET['tid'])) {
                         <label for="tid">Teacher ID:</label>
                         <input type="text" id="tid" name="tid" value="<?php echo htmlspecialchars($_GET['tid'] ?? ''); ?>" placeholder="e.g., T001">
                     </div>
-                    <button type="submit" class="btn">Search</button>
+                    <button type="submit" class="btn mt-4">Search</button>
                 </form>
 
                 <?php if ($error): ?>
@@ -99,13 +100,11 @@ if (isset($_GET['tid'])) {
                 <?php elseif (isset($_GET['tid']) && !$error): ?>
                     <div class="alert alert-warning">No teacher found for ID: <?php echo htmlspecialchars($_GET['tid']); ?></div>
                 <?php endif; ?>
-
-                <div class="alert alert-warning" style="margin-top: 2rem;">
+                <!-- <div class="alert alert-warning" style="margin-top: 2rem;">
                     <strong>SQL Injection Hint:</strong>
                     <p>Try: <code>' UNION SELECT username,password,role FROM users-- -</code></p>
                     <p>This query returns 3 columns (teacher_id, name, department), perfect for UNION attacks!</p>
-                </div>
-
+                </div> -->
                 <div style="margin-top: 2rem;">
                     <h3>Available Teachers:</h3>
                     <p>T001, T002, T003, T004, T005, T006</p>

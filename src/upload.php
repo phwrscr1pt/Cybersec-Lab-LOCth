@@ -90,6 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
   <meta charset="UTF-8">
   <title>File Upload (Vulnerable)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/modern-school.css">
   <style>
     body{font-family:ui-sans-serif,system-ui,Segoe UI,Arial;margin:24px}
     .alert{padding:10px 12px;border-radius:8px;border:1px solid #ddd;margin:10px 0}

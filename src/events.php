@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyberTech University - Events</title>
+    <link rel="icon" href="assets/img/logo.svg">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/modern-school.css">
 </head>
@@ -20,7 +21,7 @@
                         <li><a href="academics.php">Academics</a></li>
                         <li><a href="news.php">News</a></li>
                         <li><a href="events.php">Events</a></li>
-                        <li><a href="admissions.php">Admissions</a></li>
+                        <!-- <li><a href="admissions.php">Admissions</a></li> -->
                         <li><a href="contact.php">Contact</a></li>
                         <li><a href="login.php">Portal</a></li>
                     </ul>
@@ -31,7 +32,7 @@
 
     <main>
         <div class="container">
-            <div class="card">
+            <div class="grid">
                 <h2>Upcoming Events</h2>
             </div>
 
@@ -60,7 +61,7 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2024 CyberTech University. For education only. Do not deploy publicly.</p>
+            <p>&copy; 2025 CyberTech University. For education only. Do not deploy publicly.</p>
         </div>
     </footer>
     <script src="assets/js/ui.js"></script>
