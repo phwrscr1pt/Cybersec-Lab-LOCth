@@ -14,29 +14,59 @@ if ($conn->connect_error) {
 $error = '';
 $success = '';
 
-if ($_POST) {
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
-    
-    // VULNERABLE: Direct string interpolation - SQL Injection
-    $query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
-    $result = $conn->query($query);
-    
-    if ($result && $result->num_rows > 0) {
-        $user_data = $result->fetch_assoc();
-        $_SESSION['user'] = $user_data;
-        
-        if ($user_data['role'] === 'admin') {
-            header('Location: otp.php');
-            exit;
-        } elseif ($user_data['role'] === 'student') {
-            header('Location: profile.php?sid=' . $user_data['student_sid']);
-            exit;
-        }
+function pick_exact_user(mysqli_result $res, string $typed): ?array {
+    if (method_exists($res, 'fetch_all')) {
+        $rows = $res->fetch_all(MYSQLI_ASSOC);
     } else {
+        $rows = [];
+        while ($r = $res->fetch_assoc()) $rows[] = $r;
+    }
+    foreach ($rows as $r) {
+        if (isset($r['username']) && strcasecmp($r['username'], $typed) === 0) {
+            return $r;
+        }
+    }
+    return null;
+}
+
+function redirect_by_role_and_set_session(array $u): void {
+    $_SESSION['user'] = $u;
+    unset($_SESSION['otp_verified']);
+
+    if (($u['role'] ?? null) === 'admin') {
+        header('Location: otp.php'); exit;
+    }
+    if (($u['role'] ?? null) === 'student') {
+        $sid = $u['student_sid'] ?? ($u['id'] ?? '');
+        header('Location: profile.php?sid=' . $sid); exit;
+    }
+    header('Location: index.php'); exit;
+}
+
+
+if ($_POST) {
+    $username = trim($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? '';
+
+    usleep(150000);
+
+    $sql  = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
+    $res  = $conn->query($sql);
+
+    if (!$res || $res->num_rows === 0) {
         $error = 'Invalid credentials';
+    } else {
+        $picked = pick_exact_user($res, $username);
+
+        if (!$picked) {
+            $error = 'Invalid credentials';
+        } else {
+            redirect_by_role_and_set_session($picked);
+        }
     }
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -105,7 +135,8 @@ if ($_POST) {
                 </div>
                 
                 <div style="margin-top: 1rem;">
-                    <a href="search.php">Teacher Directory</a> | 
+                    <a class="active" href="register.php">Register</a> |
+                    <a href="search.php">Teacher Directory</a> |
                     <a href="student.php">Course Search</a> |
                     <a href="upload.php">File Upload</a>
                 </div>
